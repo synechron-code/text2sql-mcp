@@ -39,13 +39,13 @@ A sample REPL is also included.
 ### Running the Server with Docker
 
 ```bash
-docker run -it --env-file=.env -p8000:8000 -v $(pwd)/servers/text2sql/example:/home/appuser/config text2sql:latest server
+docker run -it --env-file=.env -p8000:8000 -v $(pwd)/servers/text2sql/example:/home/appuser/config 709825985650.dkr.ecr.us-east-1.amazonaws.com/synechron/mcp-text2sql:0.0.9-2025.06.27-rc1 server
 ````
 
 ### Running the Sample Client with Docker
 
 ```bash
-docker run -it --env-file=.env text2sql:latest client
+docker run -it --env-file=.env 709825985650.dkr.ecr.us-east-1.amazonaws.com/synechron/mcp-text2sql:0.0.9-2025.06.27-rc1 client
 ```
 
 ## Example Client Usage
@@ -100,7 +100,7 @@ The server should be run with Docker. Use either of the following configurations
         "--rm",
         "--env-file",
         ".env",
-        "text2sql:latest",
+        "709825985650.dkr.ecr.us-east-1.amazonaws.com/synechron/mcp-text2sql:0.0.9-2025.06.27-rc1",
         "server"
       ]
     }
