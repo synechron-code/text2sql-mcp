@@ -34,18 +34,32 @@ A sample REPL is also included.
 
 ---
 
-## Running with Docker
+## Quick Start with Docker
+
+> Note: To use your own databases, further configuration is required, see the [Configuration](#configuration) section
+> below.
 
 ### Running the Server with Docker
 
 ```bash
-docker run -it --env-file=.env -p8000:8000 -v $(pwd)/servers/text2sql/example:/home/appuser/config 709825985650.dkr.ecr.us-east-1.amazonaws.com/synechron/mcp-text2sql:0.0.9-2025.06.27-rc1 server
+docker run -it -p8000:8000 \
+  -v ~/.aws:/home/appuser/.aws:ro \
+  -e MODEL_API_TYPE=Bedrock \
+  -e AWS_PROFILE=AWSAdministratorAccess-880502554482 \
+  -e FASTMCP_HOST=0.0.0.0 \
+  synecloudpracticeprodacr.azurecr.io/nexuschat-mcpo-servers:0.0.10-2025.07.04-rc2 server
 ````
 
 ### Running the Sample Client with Docker
 
 ```bash
-docker run -it --env-file=.env 709825985650.dkr.ecr.us-east-1.amazonaws.com/synechron/mcp-text2sql:0.0.9-2025.06.27-rc1 client
+docker run -it \
+    -v ~/.aws:/home/appuser/.aws:ro \
+    -e AWS_PROFILE=AWSAdministratorAccess-880502554482 \
+    -e BEDROCK_MODEL_ID=us.anthropic.claude-3-7-sonnet-20250219-v1:0 \
+    -e BEDROCK_API_VERSION=2025-01-01-preview \
+    -e MCP_SERVER_HOST=host.docker.internal \
+     synecloudpracticeprodacr.azurecr.io/nexuschat-mcpo-servers:0.0.10-2025.07.04-rc2 client
 ```
 
 ## Example Client Usage
@@ -100,7 +114,7 @@ The server should be run with Docker. Use either of the following configurations
         "--rm",
         "--env-file",
         ".env",
-        "709825985650.dkr.ecr.us-east-1.amazonaws.com/synechron/mcp-text2sql:0.0.9-2025.06.27-rc1",
+        "synecloudpracticeprodacr.azurecr.io/nexuschat-mcpo-servers:0.0.10-2025.07.04-rc2",
         "server"
       ]
     }
@@ -128,7 +142,7 @@ The Text2SQL MCP server can be configured with a combination of environment vari
 | MODEL_API_TYPE / MODEL_TYPE | MODEL_TYPE            | OpenAI                      | Select model API type (OpenAI, Azure OpenAI, Bedrock, Ollama)                                                 |
 | API_ENDPOINT                | OPENAI_ENDPOINT       | <http://litellm-proxy:4000> | OpenAI API endpoint                                                                                           |
 | API_ID                      | API_ACCESS_ID         |                             | Access Key ID                                                                                                 |
-| API_KEY                     | OPENAI_API_KEY        | sk-1234                     | OpenAI API key                                                                                                |
+| API_KEY                     | OPENAI_API_KEY        |                             | OpenAI API key                                                                                                |
 | API_REGION                  | AWS_REGION            | us-east-1                   | Region for cloud-hosted models                                                                                |
 | API_VERSION                 |                       | 2025-01-01-preview          | OpenAI API version                                                                                            |
 | LLM_MODEL_NAME              |                       | gpt-4.1-mini                | Text-to-SQL model                                                                                             |
@@ -155,7 +169,7 @@ The Text2SQL MCP server can be configured with a combination of environment vari
 ```env
 LOG_LEVEL=INFO
 PYTHONUNBUFFERED=1
-TEXT2SQL_VALVES_JSON=/home/appuser/config/valves_aws.json
+TEXT2SQL_VALVES_JSON=/home/appuser/config/config.json
 
 MODE=shttp
 FASTMCP_HOST=0.0.0.0
@@ -165,9 +179,7 @@ AUTH_ENABLED=true
 AUTH_JWKS_URI=https://cognito-idp.us-east-1.amazonaws.com/us-east-1_/.well-known/jwks.json
 AUTH_ISSUER=https://cognito-idp.us-east-1.amazonaws.com/us-east-1_
 
-AWS_REGION=us-east-1
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
+AWS_PROFILE=default
 ```
 
 ### Example TEXT2SQL_VALVES_JSON (valves.json)
@@ -218,17 +230,14 @@ parameters. Here's an example configuration:
   },
   "IGNORE_SCHEMA": "information_schema, INFORMATION_SCHEMA, _rsc, db_accessadmin, db_backupoperator, db_datareader, db_datawriter, db_ddladmin, db_denydatareader, db_denydatawriter, db_owner, db_securityadmin, guest, queryinsights, sys, pg_catalog",
   "MODEL_API_TYPE": "Bedrock",
-  "API_ENDPOINT": "http://litellm-proxy:4000",
-  "API_ID": "{{AWS_ACCESS_KEY_ID}}",
-  "API_KEY": "{{AWS_SECRET_ACCESS_KEY}}",
-  "API_REGION": "us-east-1",
+  "AWS_PROFILE": "default",
   "API_VERSION": "2025-01-01-preview",
   "LLM_MODEL_NAME": "us.anthropic.claude-3-7-sonnet-20250219-v1:0",
   "EMBED_MODEL_NAME": "amazon.titan-embed-text-v2:0",
   "MAX_RETRY": 3,
   "MAX_RESULTS": 100,
   "MAX_DATAFRAME": 2000,
-  "LOG_LEVEL": "DEBUG"
+  "LOG_LEVEL": "INFO"
 }
 ```
 
@@ -243,9 +252,7 @@ The following environment variables can be provided to the sample MCP client:
 | `MCP_SERVER_PORT`          | `8000`  | Port for MCP server.                                                                                                                                                                                                                              |
 | `BEDROCK_MODEL_ID`         |         | Required if using AWS Bedrock, e.g. `us.anthropic.claude-3-7-sonnet-20250219-v1:0`                                                                                                                                                                |
 | `BEDROCK_API_VERSION`      |         | Required if using AWS Bedrock, e.g. `2023-06-01-preview`                                                                                                                                                                                          |
-| `AWS_REGION`               |         | Required if using AWS Bedrock, e.g. `us-east-1`                                                                                                                                                                                                   |
-| `AWS_ACCESS_KEY_ID`        |         | Required if using AWS Bedrock                                                                                                                                                                                                                     |
-| `AWS_SECRET_ACCESS_KEY`    |         | Required if using AWS Bedrock                                                                                                                                                                                                                     |
+| `AWS_PROFILE`              |         | Required if using AWS Bedrock, e.g. `default`                                                                                                                                                                                                     |
 | `AZURE_DEPLOYMENT_MODEL`   |         | Required if using Azure OpenAI. Ignored if `BEDROCK_MODEL_ID` is set. For Azure authentication see [DefaultAzureCredential](https://learn.microsoft.com/en-us/python/api/azure-identity/azure.identity.defaultazurecredential?view=azure-python). |
 | `AZURE_API_VERSION`        |         | Required If using Azure OpenAI. Ignored if `BEDROCK_MODEL_ID` is set.                                                                                                                                                                             |
 | `OTEL_SDK_DISABLED`        | `false` | Enable telemetry for Crew.AI client.                                                                                                                                                                                                              |
