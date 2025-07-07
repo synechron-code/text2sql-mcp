@@ -47,7 +47,7 @@ docker run -it -p8000:8000 \
   -e MODEL_API_TYPE=Bedrock \
   -e AWS_PROFILE=AWSAdministratorAccess-880502554482 \
   -e FASTMCP_HOST=0.0.0.0 \
-  synecloudpracticeprodacr.azurecr.io/nexuschat-mcpo-servers:0.0.10-2025.07.04-rc2 server
+  709825985650.dkr.ecr.us-east-1.amazonaws.com/synechron/mcp-text2sql:0.0.10-2025.07.04-rc3 server
 ````
 
 ### Running the Sample Client with Docker
@@ -59,7 +59,7 @@ docker run -it \
     -e BEDROCK_MODEL_ID=us.anthropic.claude-3-7-sonnet-20250219-v1:0 \
     -e BEDROCK_API_VERSION=2025-01-01-preview \
     -e MCP_SERVER_HOST=host.docker.internal \
-     synecloudpracticeprodacr.azurecr.io/nexuschat-mcpo-servers:0.0.10-2025.07.04-rc2 client
+     709825985650.dkr.ecr.us-east-1.amazonaws.com/synechron/mcp-text2sql:0.0.10-2025.07.04-rc3 client
 ```
 
 ## Example Client Usage
@@ -114,7 +114,7 @@ The server should be run with Docker. Use either of the following configurations
         "--rm",
         "--env-file",
         ".env",
-        "synecloudpracticeprodacr.azurecr.io/nexuschat-mcpo-servers:0.0.10-2025.07.04-rc2",
+        "709825985650.dkr.ecr.us-east-1.amazonaws.com/synechron/mcp-text2sql:0.0.10-2025.07.04-rc3",
         "server"
       ]
     }
